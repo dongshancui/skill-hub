@@ -6,19 +6,10 @@
       "command": [
         "npx", "-y", "@bytebase/dbhub@latest",
         "--transport", "stdio",
-        "--dsn", "postgres://user:password@localhost:5432/mydb"
+        "--dsn", "mysql://user:password@remote-host:3306/mydb"
       ],
       "enabled": false,
       "timeout": 15000
-    },
-    "sqlite": {
-      "type": "local",
-      "command": [
-        "npx", "-y", "@modelcontextprotocol/server-sqlite",
-        "--db-path", "/path/to/database.db"
-      ],
-      "enabled": false,
-      "timeout": 10000
     },
     "playwright": {
       "type": "local",
