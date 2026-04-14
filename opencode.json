@@ -4,9 +4,8 @@
     "dbhub": {
       "type": "local",
       "command": [
-        "npx", "-y", "@bytebase/dbhub@0.12.1",
-        "--transport", "stdio",
-        "--dsn", "$MYSQL_DSN"
+        "powershell", "-NoProfile", "-Command",
+        "npx -y @bytebase/dbhub@0.12.1 --transport stdio --dsn $env:MYSQL_DSN"
       ],
       "enabled": false,
       "timeout": 15000
