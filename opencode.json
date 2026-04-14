@@ -4,9 +4,9 @@
     "dbhub": {
       "type": "local",
       "command": [
-        "npx", "-y", "@bytebase/dbhub@latest",
+        "npx", "-y", "@bytebase/dbhub@0.12.1",
         "--transport", "stdio",
-        "--dsn", "mysql://user:password@remote-host:3306/mydb"
+        "--dsn", "$MYSQL_DSN"
       ],
       "enabled": false,
       "timeout": 15000
