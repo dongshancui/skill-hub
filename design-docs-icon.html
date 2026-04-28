@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>设计文档图标</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.icon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* document stack */
+.stack {
+  position: relative;
+  width: 96px;
+  height: 116px;
+}
+
+.doc {
+  position: absolute;
+  width: 80px;
+  height: 100px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 9px 8px;
+  gap: 5px;
+}
+/* dog-ear */
+.doc::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 16px; height: 16px;
+  background: #f1f5f9;
+  border-left: 1.5px solid #e2e8f0;
+  border-bottom: 1.5px solid #e2e8f0;
+  border-radius: 0 6px 0 6px;
+}
+
+/* back doc (sql) */
+.doc-3 {
+  left: 16px; top: 16px;
+  background: #fff9f0;
+  border-color: #fed7aa;
+  transform: rotate(6deg);
+  z-index: 1;
+}
+.doc-3::after { background: #fff3e0; border-color: #fed7aa; }
+
+/* middle doc (yaml) */
+.doc-2 {
+  left: 8px; top: 8px;
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  transform: rotate(2deg);
+  z-index: 2;
+}
+.doc-2::after { background: #e0f2fe; border-color: #bae6fd; }
+
+/* front doc (md) */
+.doc-1 {
+  left: 0; top: 0;
+  background: #fff;
+  border-color: #cbd5e1;
+  z-index: 3;
+}
+.doc-1::after { background: #f1f5f9; border-color: #e2e8f0; }
+
+/* lines inside doc */
+.line {
+  height: 4px;
+  border-radius: 2px;
+  background: #e2e8f0;
+}
+.doc-1 .line { background: #e2e8f0; }
+.doc-2 .line { background: #bae6fd; }
+.doc-3 .line { background: #fed7aa; }
+
+.line.w100 { width: 100%; }
+.line.w80  { width: 80%; }
+.line.w60  { width: 60%; }
+.line.w90  { width: 90%; }
+.line.w70  { width: 70%; }
+
+/* badge */
+.ext {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.doc-1 .ext { background: #e8f5e9; color: #388e3c; }
+.doc-2 .ext { background: #e0f2fe; color: #0284c7; }
+.doc-3 .ext { background: #fff3e0; color: #d97706; }
+
+/* label */
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.label-main {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -.01em;
+}
+.label-files {
+  display: flex;
+  gap: 6px;
+}
+.label-file {
+  font-size: .6rem;
+  color: #94a3b8;
+  font-weight: 500;
+  font-family: 'Menlo', 'Consolas', monospace;
+}
+</style>
+</head>
+<body>
+<div class="icon-wrap">
+
+  <div class="stack">
+    <!-- back: sql -->
+    <div class="doc doc-3">
+      <div class="line w80"></div>
+      <div class="line w100"></div>
+      <div class="line w60"></div>
+      <div class="line w90"></div>
+      <div class="line w70"></div>
+      <span class="ext">.sql</span>
+    </div>
+    <!-- middle: yaml -->
+    <div class="doc doc-2">
+      <div class="line w90"></div>
+      <div class="line w70"></div>
+      <div class="line w100"></div>
+      <div class="line w80"></div>
+      <div class="line w60"></div>
+      <span class="ext">.yaml</span>
+    </div>
+    <!-- front: md -->
+    <div class="doc doc-1">
+      <div class="line w100"></div>
+      <div class="line w80"></div>
+      <div class="line w100"></div>
+      <div class="line w60"></div>
+      <div class="line w90"></div>
+      <span class="ext">.md</span>
+    </div>
+  </div>
+
+  <div class="label">
+    <div class="label-main">设计文档</div>
+    <div class="label-files">
+      <span class="label-file">design_document.md</span>
+      <span class="label-file">·</span>
+      <span class="label-file">design_api.yaml</span>
+      <span class="label-file">·</span>
+      <span class="label-file">design_db.sql</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
