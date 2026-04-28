@@ -5,572 +5,454 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Harness 工程实践方法论</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root {
-  --bg:      #070b11;
-  --card:    #0d1321;
-  --card2:   #111827;
-  --border:  #1e2d42;
-  --border2: #253347;
-  --text:    #dde6f0;
-  --muted:   #6b7f96;
-  --dim:     #3d5068;
-  --c1: #3b9eff;
-  --c2: #2ecc71;
-  --c3: #f0a030;
-  --c4: #b06ef5;
-  --c1g: linear-gradient(135deg,#3b9eff,#0066cc);
-  --c2g: linear-gradient(135deg,#2ecc71,#0d9140);
-  --c3g: linear-gradient(135deg,#f0a030,#c0700a);
-  --c4g: linear-gradient(135deg,#b06ef5,#7030c0);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  padding:56px 20px 80px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 20px 80px;
 }
 
-/* ── background decoration ── */
-body::before{
-  content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 0%,rgba(59,158,255,.06) 0%,transparent 70%),
-    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(176,110,245,.05) 0%,transparent 70%);
-  pointer-events:none;
+.page {
+  width: 560px;
 }
 
-.page{max-width:740px;margin:0 auto;position:relative}
-
-/* ── header ── */
-.header{text-align:center;margin-bottom:52px}
-.header .eyebrow{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 14px;border-radius:20px;
-  background:rgba(59,158,255,.08);border:1px solid rgba(59,158,255,.2);
-  color:var(--c1);font-size:.72rem;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;margin-bottom:18px;
+/* header */
+.title {
+  text-align: center;
+  margin-bottom: 44px;
 }
-.header h1{
-  font-size:2rem;font-weight:900;line-height:1.15;
-  background:linear-gradient(160deg,#e8f0fa 0%,#8fa8c4 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  margin-bottom:10px;
+.title h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -.02em;
 }
-.header .desc{color:var(--muted);font-size:.88rem;line-height:1.7}
-
-/* ── phase connector ── */
-.connector{
-  display:flex;flex-direction:column;align-items:center;
-  height:44px;gap:0;pointer-events:none;
-}
-.connector-line{
-  width:2px;flex:1;
-  background:linear-gradient(to bottom,var(--border2),var(--border));
-}
-.connector-tip{
-  width:0;height:0;
-  border-left:5px solid transparent;
-  border-right:5px solid transparent;
-  border-top:7px solid var(--border2);
+.title p {
+  margin-top: 6px;
+  font-size: .82rem;
+  color: #9ca3af;
 }
 
-/* ── phase card ── */
-.phase{
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  transition:box-shadow .25s;
-}
-.phase:hover{box-shadow:0 0 0 1px var(--border2),0 16px 48px rgba(0,0,0,.5)}
-
-.phase-head{
-  display:flex;align-items:center;gap:14px;
-  padding:20px 26px 16px;
-  border-bottom:1px solid var(--border);
-}
-.phase-num{
-  width:32px;height:32px;flex-shrink:0;
-  border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;font-weight:800;letter-spacing:.02em;
-}
-.p1 .phase-num{background:rgba(59,158,255,.12);color:var(--c1)}
-.p2 .phase-num{background:rgba(46,204,113,.12);color:var(--c2)}
-.p3 .phase-num{background:rgba(240,160,48,.12);color:var(--c3)}
-.p4 .phase-num{background:rgba(176,110,245,.12);color:var(--c4)}
-
-.phase-head-text{flex:1}
-.phase-name{font-size:.95rem;font-weight:700;line-height:1}
-.phase-sub{font-size:.73rem;color:var(--muted);margin-top:4px}
-
-/* top accent line */
-.p1{border-top:2px solid var(--c1)}
-.p2{border-top:2px solid var(--c2)}
-.p3{border-top:2px solid var(--c3)}
-.p4{border-top:2px solid var(--c4)}
-
-.phase-body{padding:20px 26px 24px}
-
-/* ── Phase 1: horizontal steps ── */
-.steps-row{
-  display:flex;align-items:center;gap:0;
-}
-.step-node{
-  flex:1;
-  background:var(--card2);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:14px 12px 12px;
-  text-align:center;
-}
-.step-node .ico{font-size:1.3rem;display:block;margin-bottom:6px}
-.step-node .name{font-size:.8rem;font-weight:600;color:var(--text)}
-.step-node .hint{font-size:.68rem;color:var(--muted);margin-top:3px;line-height:1.4}
-.step-conn{
-  flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;
-  color:var(--dim);font-size:1rem;padding-bottom:8px;
+/* flow */
+.flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
-.mode-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:600;
-  margin-top:12px;
-}
-.mode-plan{background:rgba(59,158,255,.1);color:var(--c1);border:1px solid rgba(59,158,255,.2)}
-
-/* ── Phase 2: agent + outputs ── */
-.agent-card{
-  display:flex;align-items:center;gap:14px;
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:12px;padding:14px 18px;
-  margin-bottom:14px;
-}
-.agent-icon{font-size:1.6rem;flex-shrink:0}
-.agent-info .agent-name{font-size:.88rem;font-weight:700}
-.agent-info .agent-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
-.agent-badge{
-  margin-left:auto;padding:3px 10px;border-radius:6px;
-  font-size:.68rem;font-weight:600;
-  background:rgba(46,204,113,.1);color:var(--c2);
-  border:1px solid rgba(46,204,113,.2);flex-shrink:0;
+/* card */
+.card {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
 }
 
-.outputs-row{
-  display:flex;gap:10px;flex-wrap:wrap;
-}
-.output-chip{
-  display:flex;align-items:center;gap:7px;
-  padding:9px 14px;border-radius:10px;
-  background:rgba(46,204,113,.05);border:1px solid rgba(46,204,113,.18);
-  font-size:.78rem;font-weight:600;color:var(--c2);flex:1;min-width:150px;
-}
-.output-chip .chip-sub{font-size:.65rem;color:var(--muted);font-weight:400;display:block;margin-top:1px}
-
-/* ── Phase 3: dev loop ── */
-.dev-trigger{
-  display:flex;align-items:center;gap:10px;
-  background:#0a1525;border:1px solid #1a2d45;
-  border-radius:10px;padding:10px 16px;
-  margin-bottom:16px;font-family:'JetBrains Mono',monospace;
-  font-size:.8rem;color:#7ec8e3;
-}
-.dev-trigger .prompt{color:#4a6a88;margin-right:4px}
-.dev-trigger .cmd-name{color:#e8a430;font-weight:500}
-.dev-trigger .cmd-args{color:#7ec8e3}
-
-/* loop zone */
-.loop-zone{
-  background:rgba(240,160,48,.03);
-  border:1px dashed rgba(240,160,48,.2);
-  border-radius:14px;
-  padding:18px 18px 12px;
-  position:relative;
-}
-.loop-zone-label{
-  position:absolute;top:-11px;left:16px;
-  background:var(--card);
-  padding:2px 10px;border-radius:6px;
-  font-size:.65rem;font-weight:700;color:var(--c3);
-  border:1px solid rgba(240,160,48,.2);
-  letter-spacing:.06em;text-transform:uppercase;
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
 }
 
-/* two agents side by side */
-.agents-row{
-  display:flex;align-items:stretch;gap:0;
+.num {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  font-size: .75rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
-.loop-agent{
-  flex:1;
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:12px;padding:14px;text-align:center;
-  transition:border-color .2s;
-}
-.loop-agent.exec{border-top:2px solid var(--c1)}
-.loop-agent.test{border-top:2px solid var(--c2)}
-.loop-agent .la-icon{font-size:1.4rem;display:block;margin-bottom:6px}
-.loop-agent .la-name{font-size:.83rem;font-weight:700}
-.loop-agent.exec .la-name{color:var(--c1)}
-.loop-agent.test .la-name{color:var(--c2)}
-.loop-agent .la-role{font-size:.68rem;color:var(--muted);margin-top:3px}
-.loop-agent .la-tag{
-  display:inline-block;margin-top:7px;
-  padding:2px 8px;border-radius:5px;
-  font-size:.62rem;font-weight:600;letter-spacing:.04em;
-  text-transform:uppercase;
-}
-.loop-agent.exec .la-tag{background:rgba(59,158,255,.1);color:var(--c1)}
-.loop-agent.test .la-tag{background:rgba(46,204,113,.1);color:var(--c2)}
+.c1 .num { background: #eff6ff; color: #3b82f6; }
+.c2 .num { background: #f0fdf4; color: #22c55e; }
+.c3 .num { background: #fffbeb; color: #f59e0b; }
+.c4 .num { background: #faf5ff; color: #a855f7; }
 
-/* horizontal arrow between agents */
-.h-arrow-wrap{
-  display:flex;align-items:center;padding:0 10px;
-}
-.h-arrow-line{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-}
-.h-arrow-track{
-  display:flex;align-items:center;gap:0;
-}
-.h-line{width:24px;height:2px;background:var(--border2)}
-.h-tip{
-  width:0;height:0;
-  border-top:5px solid transparent;
-  border-bottom:5px solid transparent;
-  border-left:7px solid var(--border2);
+.card-title { font-size: .88rem; font-weight: 700; color: #111827; }
+.card-sub   { font-size: .7rem; color: #9ca3af; margin-top: 2px; }
+
+/* accent top border */
+.c1 { border-top: 2.5px solid #3b82f6; }
+.c2 { border-top: 2.5px solid #22c55e; }
+.c3 { border-top: 2.5px solid #f59e0b; }
+.c4 { border-top: 2.5px solid #a855f7; }
+
+.card-body {
+  padding: 0 20px 18px;
+  border-top: 1px solid #f3f4f6;
 }
 
-/* loop return U-path */
-.loop-return{
-  display:flex;align-items:flex-end;
-  margin:0 12px;
-  height:36px;
-  position:relative;
+/* steps row */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 14px;
 }
-.u-left{
-  flex:1;height:100%;
-  border-left:2px solid rgba(240,160,48,.5);
-  border-bottom:2px solid rgba(240,160,48,.5);
-  border-radius:0 0 0 10px;
-  position:relative;
+.step {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 10px 9px;
+  text-align: center;
 }
-.u-left::after{  /* arrowhead pointing up at top-left */
-  content:'';position:absolute;
-  top:-1px;left:-6px;
-  width:0;height:0;
-  border-left:4px solid transparent;
-  border-right:4px solid transparent;
-  border-bottom:7px solid rgba(240,160,48,.8);
+.step .sico { font-size: 1.1rem; display: block; margin-bottom: 4px; }
+.step .sname { font-size: .72rem; font-weight: 600; color: #374151; }
+.step .shint { font-size: .62rem; color: #9ca3af; margin-top: 2px; }
+
+.arrow-r { color: #d1d5db; font-size: .9rem; flex-shrink: 0; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: .65rem;
+  font-weight: 600;
 }
-.u-center{
-  display:flex;align-items:flex-end;
-  padding:0 10px 6px;
-  font-size:.68rem;color:rgba(240,160,48,.8);
-  white-space:nowrap;letter-spacing:.02em;
+.tag-blue { background: #eff6ff; color: #3b82f6; }
+
+/* phase 2 output */
+.outputs {
+  display: flex;
+  gap: 8px;
+  padding-top: 14px;
 }
-.u-right{
-  flex:1;height:100%;
-  border-right:2px solid rgba(240,160,48,.5);
-  border-bottom:2px solid rgba(240,160,48,.5);
-  border-radius:0 0 10px 0;
-  position:relative;
+.out {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-weight: 600;
+  color: #15803d;
 }
-.u-right::after{  /* arrowhead pointing down at top-right */
-  content:'';position:absolute;
-  top:-1px;right:-6px;
-  width:0;height:0;
-  border-left:4px solid transparent;
-  border-right:4px solid transparent;
-  border-top:7px solid rgba(240,160,48,.8);
+.out .out-sub {
+  font-size: .62rem;
+  color: #86efac;
+  font-weight: 400;
+  display: block;
 }
 
-/* pass exit */
-.pass-exit{
-  display:flex;flex-direction:column;align-items:center;
-  gap:4px;padding-top:10px;
+/* phase 3 loop */
+.loop-zone {
+  margin-top: 14px;
+  border: 1.5px dashed #fcd34d;
+  border-radius: 12px;
+  padding: 14px 14px 10px;
+  background: #fffdf5;
+  position: relative;
 }
-.pass-line{width:2px;height:16px;background:rgba(46,204,113,.4)}
-.pass-tip{
-  width:0;height:0;
-  border-left:4px solid transparent;
-  border-right:4px solid transparent;
-  border-top:6px solid rgba(46,204,113,.5);
-}
-.pass-label{
-  font-size:.7rem;color:var(--c2);font-weight:600;
-  background:rgba(46,204,113,.08);
-  border:1px solid rgba(46,204,113,.2);
-  border-radius:6px;padding:3px 12px;
-  margin-top:2px;
+.loop-label {
+  position: absolute;
+  top: -10px; left: 14px;
+  background: #fff;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: .6rem;
+  font-weight: 700;
+  color: #d97706;
+  border: 1px solid #fcd34d;
+  letter-spacing: .06em;
 }
 
-/* ── Phase 4: human modes ── */
-.modes-row{
-  display:flex;align-items:center;gap:10px;
+.agents {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.mode-card{
-  flex:1;
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:12px;padding:14px;
+.agent {
+  flex: 1;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
 }
-.mode-card .mc-icon{font-size:1.3rem;margin-bottom:7px;display:block}
-.mode-card .mc-label{
-  font-size:.7rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.06em;margin-bottom:6px;
-}
-.mode-plan-card{border-top:2px solid var(--c1)}
-.mode-plan-card .mc-label{color:var(--c1)}
-.mode-build-card{border-top:2px solid var(--c4)}
-.mode-build-card .mc-label{color:var(--c4)}
-.mc-items{list-style:none;display:flex;flex-direction:column;gap:4px}
-.mc-items li{
-  font-size:.72rem;color:var(--muted);
-  display:flex;align-items:center;gap:5px;
-  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);
-}
-.mc-items li::before{content:'·';color:var(--dim)}
-.mc-items li:last-child{border-bottom:none}
+.agent.exec { border-top: 2px solid #3b82f6; }
+.agent.test { border-top: 2px solid #22c55e; }
+.agent .aico { font-size: 1.1rem; display: block; margin-bottom: 4px; }
+.agent.exec .aname { font-size: .72rem; font-weight: 700; color: #3b82f6; }
+.agent.test .aname { font-size: .72rem; font-weight: 700; color: #22c55e; }
+.agent .arole { font-size: .62rem; color: #9ca3af; margin-top: 2px; }
 
-.switch-icon{
-  flex-shrink:0;
-  display:flex;flex-direction:column;align-items:center;
-  gap:4px;color:var(--dim);
+/* U return arrow */
+.u-wrap {
+  display: flex;
+  align-items: flex-end;
+  height: 30px;
+  margin: 0 8px;
 }
-.switch-icon .sw-arrows{font-size:1.2rem;line-height:1}
-.switch-icon .sw-label{font-size:.6rem;letter-spacing:.04em;text-align:center;color:var(--dim)}
+.u-l {
+  flex: 1; height: 100%;
+  border-left: 1.5px solid #fbbf24;
+  border-bottom: 1.5px solid #fbbf24;
+  border-radius: 0 0 0 8px;
+  position: relative;
+}
+.u-l::after {
+  content: '';
+  position: absolute;
+  top: -1px; left: -5px;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 5px solid #fbbf24;
+}
+.u-mid {
+  padding: 0 8px 4px;
+  font-size: .62rem;
+  color: #d97706;
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-end;
+}
+.u-r {
+  flex: 1; height: 100%;
+  border-right: 1.5px solid #fbbf24;
+  border-bottom: 1.5px solid #fbbf24;
+  border-radius: 0 0 8px 0;
+  position: relative;
+}
+.u-r::after {
+  content: '';
+  position: absolute;
+  top: -1px; right: -5px;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 5px solid #fbbf24;
+}
 
-/* ── footer ── */
-footer{
-  text-align:center;margin-top:52px;
-  color:var(--dim);font-size:.72rem;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
+.pass {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: .68rem;
+  font-weight: 600;
+  color: #16a34a;
 }
-.footer-divider{
-  width:60px;height:1px;
-  background:linear-gradient(to right,transparent,var(--border2),transparent);
-}
-.ratio-badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.ratio-badge{
-  padding:4px 14px;border-radius:20px;
-  font-size:.72rem;font-weight:600;
-}
-.rb-auto{background:rgba(240,160,48,.1);color:var(--c3);border:1px solid rgba(240,160,48,.2)}
-.rb-human{background:rgba(176,110,245,.1);color:var(--c4);border:1px solid rgba(176,110,245,.2)}
 
-/* ── responsive ── */
-@media(max-width:560px){
-  .header h1{font-size:1.5rem}
-  .steps-row{flex-direction:column}
-  .step-conn{transform:rotate(90deg)}
-  .modes-row{flex-direction:column}
-  .switch-icon{flex-direction:row}
+/* phase 4 modes */
+.modes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+}
+.mode {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
+.mode .mico { font-size: 1.1rem; display: block; margin-bottom: 5px; }
+.mode-plan .mlabel { font-size: .65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.mode-build .mlabel { font-size: .65rem; font-weight: 700; color: #a855f7; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.mode ul { list-style: none; }
+.mode ul li { font-size: .65rem; color: #6b7280; padding: 2px 0; }
+.mode ul li::before { content: '· '; }
+
+.switch {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #d1d5db;
+  font-size: .7rem;
+}
+
+/* connector */
+.conn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 36px;
+}
+.conn-line {
+  width: 1.5px;
+  flex: 1;
+  background: #e5e7eb;
+}
+.conn-tip {
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid #d1d5db;
+}
+
+/* footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: .7rem;
+  color: #d1d5db;
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- ── header ── -->
-  <div class="header">
-    <div class="eyebrow">🛠 Harness Engineering</div>
-    <h1>四阶段开发方法论</h1>
-    <p class="desc">基于 Plan + Build 双模式 &amp; 三代理协作的工程实践<br>
-    自动化承载 ~80% 开发工作量，人工聚焦边界场景</p>
+  <div class="title">
+    <h1>Harness 工程实践方法论</h1>
+    <p>Plan + Build 双模式 · task-planner / executor / tester 三代理协作</p>
   </div>
 
-  <!-- ═══════════ PHASE 1 ═══════════ -->
-  <div class="phase p1">
-    <div class="phase-head">
-      <div class="phase-num">01</div>
-      <div class="phase-head-text">
-        <div class="phase-name">需求深度理解 &amp; 概要设计</div>
-        <div class="phase-sub">Plan 模式反复交互 · 需求理解是后续所有决策的根本</div>
-      </div>
-    </div>
-    <div class="phase-body">
-      <div class="steps-row">
-        <div class="step-node">
-          <span class="ico">📄</span>
-          <div class="name">读需求文档</div>
-          <div class="hint">结合文档 · Plan 模式对话</div>
-        </div>
-        <div class="step-conn">→</div>
-        <div class="step-node">
-          <span class="ico">🔁</span>
-          <div class="name">反复交互确认</div>
-          <div class="hint">澄清边界 / 消除歧义</div>
-        </div>
-        <div class="step-conn">→</div>
-        <div class="step-node">
-          <span class="ico">🏗</span>
-          <div class="name">模块划分 &amp; 设计</div>
-          <div class="hint">方案清晰再动手</div>
+  <div class="flow">
+
+    <!-- 01 -->
+    <div class="card c1">
+      <div class="card-head">
+        <div class="num">01</div>
+        <div>
+          <div class="card-title">需求深度理解 &amp; 概要设计</div>
+          <div class="card-sub">后续所有决策的根本</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
-        <span class="mode-tag mode-plan">Plan 模式</span>
-        <span style="font-size:.7rem;color:var(--muted)">— 充分理解是自动化高成功率的前提</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
-
-  <!-- ═══════════ PHASE 2 ═══════════ -->
-  <div class="phase p2">
-    <div class="phase-head">
-      <div class="phase-num">02</div>
-      <div class="phase-head-text">
-        <div class="phase-name">任务拆分 &amp; 验收点生成</div>
-        <div class="phase-sub">task-planner 代理接管 · 产出后续自动化的核心输入</div>
-      </div>
-    </div>
-    <div class="phase-body">
-      <div class="agent-card">
-        <div class="agent-icon">🤖</div>
-        <div class="agent-info">
-          <div class="agent-name">task-planner Agent</div>
-          <div class="agent-sub">解析需求 → 生成任务树 → 绑定验收标准</div>
-        </div>
-        <div class="agent-badge">自定义代理</div>
-      </div>
-      <div class="outputs-row">
-        <div class="output-chip">
-          📄 tasks.md
-          <div class="chip-sub">任务清单 · 按组拆分</div>
-        </div>
-        <div class="output-chip">
-          ☑️ checklist.md
-          <div class="chip-sub">验收点清单 · 逐条可验</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
-
-  <!-- ═══════════ PHASE 3 ═══════════ -->
-  <div class="phase p3">
-    <div class="phase-head">
-      <div class="phase-num">03</div>
-      <div class="phase-head-text">
-        <div class="phase-name">自动化开发 + 验收循环</div>
-        <div class="phase-sub">一条命令入口 · 两个 Subagent 持续循环直至全部验收通过</div>
-      </div>
-    </div>
-    <div class="phase-body">
-
-      <!-- command trigger -->
-      <div class="dev-trigger">
-        <span class="prompt">$</span>
-        <span class="cmd-name">dev</span>
-        <span class="cmd-args">tasks.md&nbsp;&nbsp;checklist.md</span>
-      </div>
-
-      <!-- loop zone -->
-      <div class="loop-zone">
-        <div class="loop-zone-label">循环体</div>
-
-        <!-- two agents -->
-        <div class="agents-row">
-          <div class="loop-agent exec">
-            <span class="la-icon">⚙️</span>
-            <div class="la-name">task-executor</div>
-            <div class="la-role">按任务组逐项实现</div>
-            <span class="la-tag">Subagent</span>
+      <div class="card-body">
+        <div class="steps">
+          <div class="step">
+            <span class="sico">📄</span>
+            <div class="sname">读需求文档</div>
           </div>
-          <div class="h-arrow-wrap">
-            <div class="h-arrow-line">
-              <div class="h-arrow-track">
-                <div class="h-line"></div>
-                <div class="h-tip"></div>
-              </div>
+          <div class="arrow-r">→</div>
+          <div class="step">
+            <span class="sico">🔁</span>
+            <div class="sname">Plan 模式反复交互</div>
+            <div class="shint">澄清边界 · 消除歧义</div>
+          </div>
+          <div class="arrow-r">→</div>
+          <div class="step">
+            <span class="sico">🏗</span>
+            <div class="sname">模块划分 &amp; 设计</div>
+          </div>
+        </div>
+        <span class="tag tag-blue">Plan 模式</span>
+      </div>
+    </div>
+
+    <div class="conn"><div class="conn-line"></div><div class="conn-tip"></div></div>
+
+    <!-- 02 -->
+    <div class="card c2">
+      <div class="card-head">
+        <div class="num">02</div>
+        <div>
+          <div class="card-title">任务拆分 &amp; 验收点生成</div>
+          <div class="card-sub">task-planner 代理产出自动化核心输入</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="outputs">
+          <div class="out">
+            📄 tasks.md
+            <div class="out-sub">任务清单 · 按组拆分</div>
+          </div>
+          <div class="out">
+            ☑️ checklist.md
+            <div class="out-sub">验收点 · 逐条可验</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="conn"><div class="conn-line"></div><div class="conn-tip"></div></div>
+
+    <!-- 03 -->
+    <div class="card c3">
+      <div class="card-head">
+        <div class="num">03</div>
+        <div>
+          <div class="card-title">自动化开发 + 验收循环</div>
+          <div class="card-sub">dev 命令触发 · 持续循环直至全部验收通过</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loop-zone">
+          <div class="loop-label">循环</div>
+          <div class="agents">
+            <div class="agent exec">
+              <span class="aico">⚙️</span>
+              <div class="aname">task-executor</div>
+              <div class="arole">Subagent · 开发实现</div>
+            </div>
+            <div class="arrow-r">→</div>
+            <div class="agent test">
+              <span class="aico">🔍</span>
+              <div class="aname">task-tester</div>
+              <div class="arole">Subagent · 验收测试</div>
             </div>
           </div>
-          <div class="loop-agent test">
-            <span class="la-icon">🔍</span>
-            <div class="la-name">task-tester</div>
-            <div class="la-role">逐条核查验收点</div>
-            <span class="la-tag">Subagent</span>
+          <div class="u-wrap">
+            <div class="u-l"></div>
+            <div class="u-mid">未通过 · 修复 · 重试</div>
+            <div class="u-r"></div>
           </div>
         </div>
-
-        <!-- U-shaped return arrow -->
-        <div class="loop-return">
-          <div class="u-left"></div>
-          <div class="u-center">未通过 · 分析修复 · 重新执行</div>
-          <div class="u-right"></div>
-        </div>
-
-      </div><!-- /loop-zone -->
-
-      <!-- pass exit -->
-      <div class="pass-exit">
-        <div class="pass-line"></div>
-        <div class="pass-tip"></div>
-        <div class="pass-label">✓ 所有验收点通过 · 进入下一阶段</div>
+        <div class="pass">✓ 全部验收通过，进入下一阶段</div>
       </div>
-
     </div>
+
+    <div class="conn"><div class="conn-line"></div><div class="conn-tip"></div></div>
+
+    <!-- 04 -->
+    <div class="card c4">
+      <div class="card-head">
+        <div class="num">04</div>
+        <div>
+          <div class="card-title">人工边界验证 &amp; 精修</div>
+          <div class="card-sub">Plan ⇄ Build 切换 · 处理边界场景</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="modes">
+          <div class="mode mode-plan">
+            <span class="mico">🔭</span>
+            <div class="mlabel">Plan 模式</div>
+            <ul>
+              <li>查日志 · 定位根因</li>
+              <li>边界场景走查</li>
+            </ul>
+          </div>
+          <div class="switch">⇄</div>
+          <div class="mode mode-build">
+            <span class="mico">🔧</span>
+            <div class="mlabel">Build 模式</div>
+            <ul>
+              <li>定向修复</li>
+              <li>验证 · 回归</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
-
-  <!-- ═══════════ PHASE 4 ═══════════ -->
-  <div class="phase p4">
-    <div class="phase-head">
-      <div class="phase-num">04</div>
-      <div class="phase-head-text">
-        <div class="phase-name">人工边界验证 &amp; 精修</div>
-        <div class="phase-sub">Plan ⇄ Build 模式切换 · 处理自动化覆盖不到的边界场景</div>
-      </div>
-    </div>
-    <div class="phase-body">
-      <div class="modes-row">
-
-        <div class="mode-card mode-plan-card">
-          <span class="mc-icon">🔭</span>
-          <div class="mc-label">Plan 模式</div>
-          <ul class="mc-items">
-            <li>查日志、看堆栈、定位根因</li>
-            <li>边界场景走查与复现</li>
-            <li>分析失败原因，制定修复方案</li>
-          </ul>
-        </div>
-
-        <div class="switch-icon">
-          <div class="sw-arrows">⇄</div>
-          <div class="sw-label">模式<br>切换</div>
-        </div>
-
-        <div class="mode-card mode-build-card">
-          <span class="mc-icon">🔧</span>
-          <div class="mc-label">Build 模式</div>
-          <ul class="mc-items">
-            <li>定向修复小问题</li>
-            <li>补充边界 case 测试</li>
-            <li>验证修复结果，回归</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ── footer ── -->
-  <footer>
-    <div class="footer-divider"></div>
-    <div class="ratio-badges">
-      <span class="ratio-badge rb-auto">⚡ 自动化覆盖 ~80%（阶段 03）</span>
-      <span class="ratio-badge rb-human">👤 人工精修 ~20%（阶段 04）</span>
-    </div>
-    <div>Harness Engineering Practice · 2026</div>
-  </footer>
-
+  <footer>Harness Engineering Practice · 2026</footer>
 </div>
 </body>
 </html>
