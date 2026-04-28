@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harness 工程实践方法论</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 32px 16px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      margin-bottom: 36px;
+    }
+    .phases {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+    .phase-badge {
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .p1 { background: #dbeafe; color: #1d4ed8; }
+    .p2 { background: #dcfce7; color: #15803d; }
+    .p3 { background: #fef9c3; color: #a16207; }
+    .p4 { background: #fce7f3; color: #be185d; }
+
+    .diagram-wrapper {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 40px 32px;
+      max-width: 960px;
+      margin: 0 auto 36px;
+      overflow-x: auto;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .legend {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .legend-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-top: 4px solid;
+    }
+    .legend-card.c1 { border-color: #3b82f6; }
+    .legend-card.c2 { border-color: #22c55e; }
+    .legend-card.c3 { border-color: #eab308; }
+    .legend-card.c4 { border-color: #ec4899; }
+    .legend-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #1a202c; }
+    .legend-card ul { list-style: none; padding: 0; }
+    .legend-card ul li {
+      font-size: 0.8rem;
+      color: #4a5568;
+      padding: 2px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .legend-card ul li::before { content: "•"; flex-shrink: 0; margin-top: 1px; }
+    .ratio {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+    .r-auto { background: #dbeafe; color: #1d4ed8; }
+    .r-human { background: #fce7f3; color: #be185d; }
+    footer {
+      text-align: center;
+      color: #a0aec0;
+      font-size: 0.75rem;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Harness 工程实践方法论</h1>
+<p class="subtitle">基于 Claude Code Harness 的四阶段开发流程</p>
+
+<div class="phases">
+  <span class="phase-badge p1">阶段一：需求分析 &amp; 概要设计</span>
+  <span class="phase-badge p2">阶段二：任务拆分 &amp; 验收确认</span>
+  <span class="phase-badge p3">阶段三：自动化开发循环（80%）</span>
+  <span class="phase-badge p4">阶段四：人工精修（20%）</span>
+</div>
+
+<div class="diagram-wrapper">
+  <div class="mermaid">
+flowchart TD
+    START(["🚀 收到需求"]) --> A1
+
+    subgraph P1["① 需求分析 & 概要设计"]
+        A1["明确业务场景\n确定边界与目标"] --> A2["划分功能模块\n任务粒度分解"] --> A3["完成概要设计\n技术方案选型"]
+    end
+
+    A3 --> B1
+
+    subgraph P2["② 任务拆分 & 验收确认"]
+        B1["调用 task-planner\n生成任务树"] --> B2["为每个任务定义\n可验证的验收点"] --> B3[["📄 输出 tasks.md\n📋 输出 checklist.md"]]
+    end
+
+    B3 --> C1
+
+    subgraph P3["③ 自动化开发循环（~80%）"]
+        C1["主会话读取\ntasks.md & checklist.md"] --> C2["按任务组\n调度 subagent 开发"] --> C3["subagent 完成\n单任务实现"] --> C4{"验收点\n全部通过？"}
+        C4 -- "❌ 未通过" --> C5["分析失败原因\n调整策略"] --> C2
+        C4 -- "✅ 通过" --> C6{{"所有任务组\n完成？"}}
+        C6 -- "还有任务组" --> C2
+        C6 -- "全部完成" --> D1
+    end
+
+    subgraph P4["④ 人工精修（~20%）"]
+        D1["人工整体走查\n发现细节问题"] --> D2["手动修复\n小问题"] --> D3["本地验证\n回归测试"] --> D4{"问题\n清零？"}
+        D4 -- "❌ 仍有问题" --> D2
+        D4 -- "✅ 全部修复" --> END
+    end
+
+    END(["🎉 交付完成"])
+
+    style START fill:#dbeafe,stroke:#3b82f6,color:#1d4ed8
+    style END   fill:#dcfce7,stroke:#22c55e,color:#15803d
+    style P1    fill:#eff6ff,stroke:#93c5fd,color:#1e40af
+    style P2    fill:#f0fdf4,stroke:#86efac,color:#166534
+    style P3    fill:#fefce8,stroke:#fde047,color:#713f12
+    style P4    fill:#fdf2f8,stroke:#f9a8d4,color:#9d174d
+    style B3    fill:#f0fdf4,stroke:#22c55e
+    style C4    fill:#fef3c7,stroke:#f59e0b
+    style C6    fill:#fef3c7,stroke:#f59e0b
+    style D4    fill:#fce7f3,stroke:#ec4899
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-card c1">
+    <h3>① 需求分析 &amp; 概要设计</h3>
+    <ul>
+      <li>厘清业务场景与边界</li>
+      <li>拆分功能模块粒度</li>
+      <li>确定技术方案</li>
+    </ul>
+  </div>
+  <div class="legend-card c2">
+    <h3>② 任务拆分 &amp; 验收确认</h3>
+    <ul>
+      <li>task-planner 生成任务树</li>
+      <li>每任务对应可验证验收点</li>
+      <li>产出 tasks.md / checklist.md</li>
+    </ul>
+  </div>
+  <div class="legend-card c3">
+    <h3>③ 自动化开发循环</h3>
+    <ul>
+      <li>主会话统一调度 subagent</li>
+      <li>验证失败自动重试修复</li>
+      <li>任务组与验收点一一对应</li>
+    </ul>
+    <span class="ratio r-auto">自动化覆盖 ~80%</span>
+  </div>
+  <div class="legend-card c4">
+    <h3>④ 人工精修</h3>
+    <ul>
+      <li>整体走查细节问题</li>
+      <li>人工修复 &amp; 本地回归验证</li>
+      <li>问题清零后交付</li>
+    </ul>
+    <span class="ratio r-human">人工投入 ~20%</span>
+  </div>
+</div>
+
+<footer>Harness Engineering Practice · 2026</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: { curve: 'basis', padding: 20 },
+    themeVariables: {
+      fontSize: '14px',
+      fontFamily: '"PingFang SC", "Microsoft YaHei", Arial, sans-serif'
+    }
+  });
+</script>
+</body>
+</html>
