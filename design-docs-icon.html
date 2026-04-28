@@ -18,79 +18,73 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
+  width: 220px;
 }
 
 /* document stack */
 .stack {
   position: relative;
-  width: 96px;
-  height: 116px;
+  width: 160px;
+  height: 180px;
 }
 
 .doc {
   position: absolute;
-  width: 80px;
-  height: 100px;
+  width: 140px;
+  height: 170px;
   background: #fff;
-  border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 3px 12px rgba(0,0,0,.1);
   display: flex;
   flex-direction: column;
-  padding: 10px 9px 8px;
-  gap: 5px;
+  padding: 18px 16px 14px;
+  gap: 8px;
 }
-/* dog-ear */
 .doc::after {
   content: '';
   position: absolute;
   top: 0; right: 0;
-  width: 16px; height: 16px;
-  background: #f1f5f9;
-  border-left: 1.5px solid #e2e8f0;
-  border-bottom: 1.5px solid #e2e8f0;
-  border-radius: 0 6px 0 6px;
+  width: 26px; height: 26px;
+  border-left: 2px solid;
+  border-bottom: 2px solid;
+  border-radius: 0 10px 0 10px;
 }
 
-/* back doc (sql) */
 .doc-3 {
-  left: 16px; top: 16px;
-  background: #fff9f0;
-  border-color: #fed7aa;
-  transform: rotate(6deg);
+  left: 20px; top: 18px;
+  background: #fffbf0;
+  border-color: #fcd34d;
+  transform: rotate(7deg);
   z-index: 1;
 }
-.doc-3::after { background: #fff3e0; border-color: #fed7aa; }
+.doc-3::after { background: #fef3c7; border-color: #fcd34d; }
 
-/* middle doc (yaml) */
 .doc-2 {
-  left: 8px; top: 8px;
+  left: 10px; top: 9px;
   background: #f0f9ff;
-  border-color: #bae6fd;
-  transform: rotate(2deg);
+  border-color: #7dd3fc;
+  transform: rotate(3deg);
   z-index: 2;
 }
-.doc-2::after { background: #e0f2fe; border-color: #bae6fd; }
+.doc-2::after { background: #e0f2fe; border-color: #7dd3fc; }
 
-/* front doc (md) */
 .doc-1 {
   left: 0; top: 0;
   background: #fff;
   border-color: #cbd5e1;
   z-index: 3;
 }
-.doc-1::after { background: #f1f5f9; border-color: #e2e8f0; }
+.doc-1::after { background: #f1f5f9; border-color: #cbd5e1; }
 
-/* lines inside doc */
 .line {
-  height: 4px;
-  border-radius: 2px;
-  background: #e2e8f0;
+  height: 6px;
+  border-radius: 3px;
 }
 .doc-1 .line { background: #e2e8f0; }
 .doc-2 .line { background: #bae6fd; }
-.doc-3 .line { background: #fed7aa; }
+.doc-3 .line { background: #fde68a; }
 
 .line.w100 { width: 100%; }
 .line.w80  { width: 80%; }
@@ -98,39 +92,42 @@ body {
 .line.w90  { width: 90%; }
 .line.w70  { width: 70%; }
 
-/* badge */
 .ext {
   position: absolute;
-  bottom: 8px; right: 8px;
-  font-size: 8px;
+  bottom: 12px; right: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .03em;
-  padding: 1px 5px;
-  border-radius: 3px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
 }
-.doc-1 .ext { background: #e8f5e9; color: #388e3c; }
+.doc-1 .ext { background: #dcfce7; color: #15803d; }
 .doc-2 .ext { background: #e0f2fe; color: #0284c7; }
-.doc-3 .ext { background: #fff3e0; color: #d97706; }
+.doc-3 .ext { background: #fef9c3; color: #a16207; }
 
 /* label */
 .label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
+  width: 100%;
 }
 .label-main {
-  font-size: .95rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   color: #1e293b;
-  letter-spacing: -.01em;
+  letter-spacing: -.02em;
 }
 .label-files {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
 }
 .label-file {
-  font-size: .6rem;
+  font-size: .68rem;
   color: #94a3b8;
   font-weight: 500;
   font-family: 'Menlo', 'Consolas', monospace;
@@ -141,7 +138,6 @@ body {
 <div class="icon-wrap">
 
   <div class="stack">
-    <!-- back: sql -->
     <div class="doc doc-3">
       <div class="line w80"></div>
       <div class="line w100"></div>
@@ -150,7 +146,6 @@ body {
       <div class="line w70"></div>
       <span class="ext">.sql</span>
     </div>
-    <!-- middle: yaml -->
     <div class="doc doc-2">
       <div class="line w90"></div>
       <div class="line w70"></div>
@@ -159,7 +154,6 @@ body {
       <div class="line w60"></div>
       <span class="ext">.yaml</span>
     </div>
-    <!-- front: md -->
     <div class="doc doc-1">
       <div class="line w100"></div>
       <div class="line w80"></div>
@@ -174,9 +168,7 @@ body {
     <div class="label-main">设计文档</div>
     <div class="label-files">
       <span class="label-file">design_document.md</span>
-      <span class="label-file">·</span>
       <span class="label-file">design_api.yaml</span>
-      <span class="label-file">·</span>
       <span class="label-file">design_db.sql</span>
     </div>
   </div>
