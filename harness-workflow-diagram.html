@@ -1,216 +1,595 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harness 工程实践方法论</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-      background: #f0f4f8;
-      padding: 32px 16px;
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.6rem;
-      color: #1a202c;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #718096;
-      font-size: 0.9rem;
-      margin-bottom: 36px;
-    }
-    .phases {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 36px;
-    }
-    .phase-badge {
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-    .p1 { background: #dbeafe; color: #1d4ed8; }
-    .p2 { background: #dcfce7; color: #15803d; }
-    .p3 { background: #fef9c3; color: #a16207; }
-    .p4 { background: #fce7f3; color: #be185d; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness 工程实践方法论</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-    .diagram-wrapper {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 40px 32px;
-      max-width: 960px;
-      margin: 0 auto 36px;
-      overflow-x: auto;
-    }
-    .mermaid {
-      display: flex;
-      justify-content: center;
-    }
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --c1: #58a6ff;
+    --c2: #3fb950;
+    --c3: #d29922;
+    --c4: #f778ba;
+    --c1-bg: rgba(88,166,255,0.08);
+    --c2-bg: rgba(63,185,80,0.08);
+    --c3-bg: rgba(210,153,34,0.08);
+    --c4-bg: rgba(247,120,186,0.08);
+  }
 
-    .legend {
-      max-width: 960px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .legend-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 18px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-top: 4px solid;
-    }
-    .legend-card.c1 { border-color: #3b82f6; }
-    .legend-card.c2 { border-color: #22c55e; }
-    .legend-card.c3 { border-color: #eab308; }
-    .legend-card.c4 { border-color: #ec4899; }
-    .legend-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #1a202c; }
-    .legend-card ul { list-style: none; padding: 0; }
-    .legend-card ul li {
-      font-size: 0.8rem;
-      color: #4a5568;
-      padding: 2px 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-    .legend-card ul li::before { content: "•"; flex-shrink: 0; margin-top: 1px; }
-    .ratio {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 8px;
-    }
-    .r-auto { background: #dbeafe; color: #1d4ed8; }
-    .r-human { background: #fce7f3; color: #be185d; }
-    footer {
-      text-align: center;
-      color: #a0aec0;
-      font-size: 0.75rem;
-      margin-top: 32px;
-    }
-  </style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 48px 24px 64px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .blob1 { width: 500px; height: 500px; background: #58a6ff; top: -150px; left: -150px; }
+  .blob2 { width: 400px; height: 400px; background: #f778ba; bottom: -100px; right: -100px; }
+  .blob3 { width: 300px; height: 300px; background: #3fb950; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .header .label {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.25);
+    color: var(--c1);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e6edf3 30%, #8b949e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Flow */
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+  /* Phase card */
+  .phase {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .phase:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .phase.p1 { border-top: 2px solid var(--c1); }
+  .phase.p2 { border-top: 2px solid var(--c2); }
+  .phase.p3 { border-top: 2px solid var(--c3); }
+  .phase.p4 { border-top: 2px solid var(--c4); }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .phase-num {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .p1 .phase-num { background: var(--c1-bg); color: var(--c1); border: 1px solid rgba(88,166,255,0.3); }
+  .p2 .phase-num { background: var(--c2-bg); color: var(--c2); border: 1px solid rgba(63,185,80,0.3); }
+  .p3 .phase-num { background: var(--c3-bg); color: var(--c3); border: 1px solid rgba(210,153,34,0.3); }
+  .p4 .phase-num { background: var(--c4-bg); color: var(--c4); border: 1px solid rgba(247,120,186,0.3); }
+
+  .phase-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+  .phase-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  .badge-auto {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(63,185,80,0.1);
+    color: var(--c2);
+    border: 1px solid rgba(63,185,80,0.25);
+    white-space: nowrap;
+  }
+  .badge-human {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(247,120,186,0.1);
+    color: var(--c4);
+    border: 1px solid rgba(247,120,186,0.25);
+    white-space: nowrap;
+  }
+
+  /* Steps inside phase */
+  .steps {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .step {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    right: -1px;
+    width: 2px;
+    height: 1px;
+  }
+  .step-box {
+    width: 100%;
+    padding: 14px 12px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+  }
+  .step-icon {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .step-text {
+    font-size: 0.8rem;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .step-desc {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Arrow between steps */
+  .step-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    padding-top: 18px;
+    color: var(--muted);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Output files highlight */
+  .output-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .output-file {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(63,185,80,0.06);
+    border: 1px solid rgba(63,185,80,0.2);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: var(--c2);
+    font-weight: 600;
+  }
+
+  /* Loop callout inside p3 */
+  .loop-box {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(210,153,34,0.05);
+    border: 1px dashed rgba(210,153,34,0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .loop-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .loop-text { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+  .loop-text strong { color: var(--c3); }
+
+  /* Connector between phases */
+  .connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    gap: 2px;
+  }
+  .connector-line {
+    width: 2px;
+    height: 24px;
+    background: linear-gradient(to bottom, var(--border), var(--border));
+  }
+  .connector-arrow {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--border);
+  }
+
+  /* Coverage bar */
+  .coverage {
+    margin-top: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+  }
+  .coverage h3 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .bar-label {
+    width: 140px;
+    font-size: 0.8rem;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+  .bar-pct {
+    width: 36px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Key insights */
+  .insights {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .insight {
+    padding: 14px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  .insight .insight-icon { font-size: 1.1rem; display: block; margin-bottom: 6px; }
+  .insight .insight-label { color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .insight .insight-val { color: var(--text); font-weight: 600; margin-top: 2px; }
+
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.5rem; }
+    .phase { padding: 20px 18px; }
+    .steps { flex-direction: column; }
+    .step-arrow { transform: rotate(90deg); padding: 6px 0; }
+    .bar-label { width: 110px; }
+  }
+</style>
 </head>
 <body>
 
-<h1>Harness 工程实践方法论</h1>
-<p class="subtitle">基于 Claude Code Harness 的四阶段开发流程</p>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
 
-<div class="phases">
-  <span class="phase-badge p1">阶段一：需求分析 &amp; 概要设计</span>
-  <span class="phase-badge p2">阶段二：任务拆分 &amp; 验收确认</span>
-  <span class="phase-badge p3">阶段三：自动化开发循环（80%）</span>
-  <span class="phase-badge p4">阶段四：人工精修（20%）</span>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="label">Harness Engineering</div>
+    <h1>工程实践方法论</h1>
+    <p>基于 Claude Code Harness 的四阶段开发流程<br>让 AI 自动化承载 80% 的开发工作量</p>
+  </div>
+
+  <!-- Flow -->
+  <div class="flow">
+
+    <!-- Phase 1 -->
+    <div class="phase p1">
+      <div class="phase-header">
+        <div class="phase-num">01</div>
+        <div>
+          <div class="phase-title">需求分析 &amp; 概要设计</div>
+          <div class="phase-sub">弄清楚要做什么，再想怎么做</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🎯</span>
+            <div class="step-text">明确业务场景</div>
+            <div class="step-desc">确定边界、目标、约束条件</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🗂️</span>
+            <div class="step-text">划分功能模块</div>
+            <div class="step-desc">按职责拆分，确定粒度</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🏗️</span>
+            <div class="step-text">概要设计</div>
+            <div class="step-desc">技术方案选型、架构决策</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+
+    <!-- Phase 2 -->
+    <div class="phase p2">
+      <div class="phase-header">
+        <div class="phase-num">02</div>
+        <div>
+          <div class="phase-title">任务拆分 &amp; 验收确认</div>
+          <div class="phase-sub">产出可执行的任务文档，是后续自动化的核心输入</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🤖</span>
+            <div class="step-text">调用 task-planner</div>
+            <div class="step-desc">生成结构化任务树</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">✅</span>
+            <div class="step-text">定义验收点</div>
+            <div class="step-desc">每个任务对应可验证标准</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">📋</span>
+            <div class="step-text">人工确认审查</div>
+            <div class="step-desc">核查任务边界与完整性</div>
+          </div>
+        </div>
+      </div>
+      <div class="output-row">
+        <div class="output-file">📄 tasks.md &nbsp;·&nbsp; 任务清单与分组</div>
+        <div class="output-file">☑️ checklist.md &nbsp;·&nbsp; 验收点清单</div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+
+    <!-- Phase 3 -->
+    <div class="phase p3">
+      <div class="phase-header">
+        <div class="phase-num">03</div>
+        <div>
+          <div class="phase-title">自动化开发循环</div>
+          <div class="phase-sub">主会话持续调度 subagent，验证失败自动重试</div>
+        </div>
+        <span class="badge-auto">⚡ 自动化覆盖 ~80%</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">📖</span>
+            <div class="step-text">读取任务文档</div>
+            <div class="step-desc">主会话加载 tasks.md & checklist.md</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🚀</span>
+            <div class="step-text">调度 Subagent</div>
+            <div class="step-desc">按任务组并发或串行执行</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🔍</span>
+            <div class="step-text">验证验收点</div>
+            <div class="step-desc">逐条核查 checklist 通过率</div>
+          </div>
+        </div>
+      </div>
+      <div class="loop-box">
+        <span class="loop-icon">🔄</span>
+        <div class="loop-text">
+          验收失败 → <strong>分析原因</strong> → 调整策略 → 重新调度 subagent → 再次验证
+          <br>直到 <strong>所有任务组验收点全部通过</strong> 才进入下一阶段
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+
+    <!-- Phase 4 -->
+    <div class="phase p4">
+      <div class="phase-header">
+        <div class="phase-num">04</div>
+        <div>
+          <div class="phase-title">人工精修</div>
+          <div class="phase-sub">处理自动化覆盖不到的细节与边界情况</div>
+        </div>
+        <span class="badge-human">👤 人工投入 ~20%</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">👁️</span>
+            <div class="step-text">整体走查</div>
+            <div class="step-desc">发现自动化遗漏的细节问题</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🔧</span>
+            <div class="step-text">手动修复</div>
+            <div class="step-desc">针对性解决小问题</div>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-box">
+            <span class="step-icon">🎉</span>
+            <div class="step-text">验证交付</div>
+            <div class="step-desc">回归测试，问题清零后上线</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Coverage section -->
+  <div class="coverage">
+    <h3>工作量分布</h3>
+    <div class="bar-row">
+      <div class="bar-label">自动化循环（阶段三）</div>
+      <div class="bar-track"><div class="bar-fill" style="width:80%;background:linear-gradient(90deg,#d29922,#f59e0b)"></div></div>
+      <div class="bar-pct" style="color:#d29922">80%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">人工精修（阶段四）</div>
+      <div class="bar-track"><div class="bar-fill" style="width:20%;background:linear-gradient(90deg,#f778ba,#ec4899)"></div></div>
+      <div class="bar-pct" style="color:#f778ba">20%</div>
+    </div>
+    <div class="insights">
+      <div class="insight">
+        <span class="insight-icon">📌</span>
+        <div class="insight-label">核心前提</div>
+        <div class="insight-val">方案足够清晰</div>
+      </div>
+      <div class="insight">
+        <span class="insight-icon">🔑</span>
+        <div class="insight-label">关键产物</div>
+        <div class="insight-val">tasks.md &amp; checklist.md</div>
+      </div>
+      <div class="insight">
+        <span class="insight-icon">♻️</span>
+        <div class="insight-label">核心机制</div>
+        <div class="insight-val">验证 + 修复闭环循环</div>
+      </div>
+      <div class="insight">
+        <span class="insight-icon">🤖</span>
+        <div class="insight-label">执行架构</div>
+        <div class="insight-val">主会话 + Subagent 分工</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Harness Engineering Practice · 2026 · 向同事分享这份流程图</footer>
+
 </div>
-
-<div class="diagram-wrapper">
-  <div class="mermaid">
-flowchart TD
-    START(["🚀 收到需求"]) --> A1
-
-    subgraph P1["① 需求分析 & 概要设计"]
-        A1["明确业务场景\n确定边界与目标"] --> A2["划分功能模块\n任务粒度分解"] --> A3["完成概要设计\n技术方案选型"]
-    end
-
-    A3 --> B1
-
-    subgraph P2["② 任务拆分 & 验收确认"]
-        B1["调用 task-planner\n生成任务树"] --> B2["为每个任务定义\n可验证的验收点"] --> B3[["📄 输出 tasks.md\n📋 输出 checklist.md"]]
-    end
-
-    B3 --> C1
-
-    subgraph P3["③ 自动化开发循环（~80%）"]
-        C1["主会话读取\ntasks.md & checklist.md"] --> C2["按任务组\n调度 subagent 开发"] --> C3["subagent 完成\n单任务实现"] --> C4{"验收点\n全部通过？"}
-        C4 -- "❌ 未通过" --> C5["分析失败原因\n调整策略"] --> C2
-        C4 -- "✅ 通过" --> C6{{"所有任务组\n完成？"}}
-        C6 -- "还有任务组" --> C2
-        C6 -- "全部完成" --> D1
-    end
-
-    subgraph P4["④ 人工精修（~20%）"]
-        D1["人工整体走查\n发现细节问题"] --> D2["手动修复\n小问题"] --> D3["本地验证\n回归测试"] --> D4{"问题\n清零？"}
-        D4 -- "❌ 仍有问题" --> D2
-        D4 -- "✅ 全部修复" --> END
-    end
-
-    END(["🎉 交付完成"])
-
-    style START fill:#dbeafe,stroke:#3b82f6,color:#1d4ed8
-    style END   fill:#dcfce7,stroke:#22c55e,color:#15803d
-    style P1    fill:#eff6ff,stroke:#93c5fd,color:#1e40af
-    style P2    fill:#f0fdf4,stroke:#86efac,color:#166534
-    style P3    fill:#fefce8,stroke:#fde047,color:#713f12
-    style P4    fill:#fdf2f8,stroke:#f9a8d4,color:#9d174d
-    style B3    fill:#f0fdf4,stroke:#22c55e
-    style C4    fill:#fef3c7,stroke:#f59e0b
-    style C6    fill:#fef3c7,stroke:#f59e0b
-    style D4    fill:#fce7f3,stroke:#ec4899
-  </div>
-</div>
-
-<div class="legend">
-  <div class="legend-card c1">
-    <h3>① 需求分析 &amp; 概要设计</h3>
-    <ul>
-      <li>厘清业务场景与边界</li>
-      <li>拆分功能模块粒度</li>
-      <li>确定技术方案</li>
-    </ul>
-  </div>
-  <div class="legend-card c2">
-    <h3>② 任务拆分 &amp; 验收确认</h3>
-    <ul>
-      <li>task-planner 生成任务树</li>
-      <li>每任务对应可验证验收点</li>
-      <li>产出 tasks.md / checklist.md</li>
-    </ul>
-  </div>
-  <div class="legend-card c3">
-    <h3>③ 自动化开发循环</h3>
-    <ul>
-      <li>主会话统一调度 subagent</li>
-      <li>验证失败自动重试修复</li>
-      <li>任务组与验收点一一对应</li>
-    </ul>
-    <span class="ratio r-auto">自动化覆盖 ~80%</span>
-  </div>
-  <div class="legend-card c4">
-    <h3>④ 人工精修</h3>
-    <ul>
-      <li>整体走查细节问题</li>
-      <li>人工修复 &amp; 本地回归验证</li>
-      <li>问题清零后交付</li>
-    </ul>
-    <span class="ratio r-human">人工投入 ~20%</span>
-  </div>
-</div>
-
-<footer>Harness Engineering Practice · 2026</footer>
-
-<script>
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'default',
-    flowchart: { curve: 'basis', padding: 20 },
-    themeVariables: {
-      fontSize: '14px',
-      fontFamily: '"PingFang SC", "Microsoft YaHei", Arial, sans-serif'
-    }
-  });
-</script>
 </body>
 </html>
