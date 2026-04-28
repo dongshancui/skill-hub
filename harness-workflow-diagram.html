@@ -5,590 +5,568 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Harness 工程实践方法论</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #21262d;
-    --border: #30363d;
-    --text: #e6edf3;
-    --muted: #8b949e;
-    --c1: #58a6ff;
-    --c2: #3fb950;
-    --c3: #d29922;
-    --c4: #f778ba;
-    --c1-bg: rgba(88,166,255,0.08);
-    --c2-bg: rgba(63,185,80,0.08);
-    --c3-bg: rgba(210,153,34,0.08);
-    --c4-bg: rgba(247,120,186,0.08);
-  }
+:root {
+  --bg:      #070b11;
+  --card:    #0d1321;
+  --card2:   #111827;
+  --border:  #1e2d42;
+  --border2: #253347;
+  --text:    #dde6f0;
+  --muted:   #6b7f96;
+  --dim:     #3d5068;
+  --c1: #3b9eff;
+  --c2: #2ecc71;
+  --c3: #f0a030;
+  --c4: #b06ef5;
+  --c1g: linear-gradient(135deg,#3b9eff,#0066cc);
+  --c2g: linear-gradient(135deg,#2ecc71,#0d9140);
+  --c3g: linear-gradient(135deg,#f0a030,#c0700a);
+  --c4g: linear-gradient(135deg,#b06ef5,#7030c0);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:56px 20px 80px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── background decoration ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%,rgba(59,158,255,.06) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(176,110,245,.05) 0%,transparent 70%);
+  pointer-events:none;
+}
 
-  body {
-    font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 48px 24px 64px;
-    position: relative;
-    overflow-x: hidden;
-  }
+.page{max-width:740px;margin:0 auto;position:relative}
 
-  /* Background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-  }
+/* ── header ── */
+.header{text-align:center;margin-bottom:52px}
+.header .eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:20px;
+  background:rgba(59,158,255,.08);border:1px solid rgba(59,158,255,.2);
+  color:var(--c1);font-size:.72rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:18px;
+}
+.header h1{
+  font-size:2rem;font-weight:900;line-height:1.15;
+  background:linear-gradient(160deg,#e8f0fa 0%,#8fa8c4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:10px;
+}
+.header .desc{color:var(--muted);font-size:.88rem;line-height:1.7}
 
-  /* Glow blobs */
-  .blob {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.12;
-    pointer-events: none;
-  }
-  .blob1 { width: 500px; height: 500px; background: #58a6ff; top: -150px; left: -150px; }
-  .blob2 { width: 400px; height: 400px; background: #f778ba; bottom: -100px; right: -100px; }
-  .blob3 { width: 300px; height: 300px; background: #3fb950; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+/* ── phase connector ── */
+.connector{
+  display:flex;flex-direction:column;align-items:center;
+  height:44px;gap:0;pointer-events:none;
+}
+.connector-line{
+  width:2px;flex:1;
+  background:linear-gradient(to bottom,var(--border2),var(--border));
+}
+.connector-tip{
+  width:0;height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid var(--border2);
+}
 
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-  }
+/* ── phase card ── */
+.phase{
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  transition:box-shadow .25s;
+}
+.phase:hover{box-shadow:0 0 0 1px var(--border2),0 16px 48px rgba(0,0,0,.5)}
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 56px;
-  }
-  .header .label {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 20px;
-    background: rgba(88,166,255,0.1);
-    border: 1px solid rgba(88,166,255,0.25);
-    color: var(--c1);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .header h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #e6edf3 30%, #8b949e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
-  .header p {
-    color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
+.phase-head{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 26px 16px;
+  border-bottom:1px solid var(--border);
+}
+.phase-num{
+  width:32px;height:32px;flex-shrink:0;
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:800;letter-spacing:.02em;
+}
+.p1 .phase-num{background:rgba(59,158,255,.12);color:var(--c1)}
+.p2 .phase-num{background:rgba(46,204,113,.12);color:var(--c2)}
+.p3 .phase-num{background:rgba(240,160,48,.12);color:var(--c3)}
+.p4 .phase-num{background:rgba(176,110,245,.12);color:var(--c4)}
 
-  /* Flow */
-  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.phase-head-text{flex:1}
+.phase-name{font-size:.95rem;font-weight:700;line-height:1}
+.phase-sub{font-size:.73rem;color:var(--muted);margin-top:4px}
 
-  /* Phase card */
-  .phase {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 32px;
-    position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .phase:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-  }
-  .phase.p1 { border-top: 2px solid var(--c1); }
-  .phase.p2 { border-top: 2px solid var(--c2); }
-  .phase.p3 { border-top: 2px solid var(--c3); }
-  .phase.p4 { border-top: 2px solid var(--c4); }
+/* top accent line */
+.p1{border-top:2px solid var(--c1)}
+.p2{border-top:2px solid var(--c2)}
+.p3{border-top:2px solid var(--c3)}
+.p4{border-top:2px solid var(--c4)}
 
-  .phase-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 22px;
-  }
-  .phase-num {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-  .p1 .phase-num { background: var(--c1-bg); color: var(--c1); border: 1px solid rgba(88,166,255,0.3); }
-  .p2 .phase-num { background: var(--c2-bg); color: var(--c2); border: 1px solid rgba(63,185,80,0.3); }
-  .p3 .phase-num { background: var(--c3-bg); color: var(--c3); border: 1px solid rgba(210,153,34,0.3); }
-  .p4 .phase-num { background: var(--c4-bg); color: var(--c4); border: 1px solid rgba(247,120,186,0.3); }
+.phase-body{padding:20px 26px 24px}
 
-  .phase-title { font-size: 1rem; font-weight: 700; color: var(--text); }
-  .phase-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+/* ── Phase 1: horizontal steps ── */
+.steps-row{
+  display:flex;align-items:center;gap:0;
+}
+.step-node{
+  flex:1;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 12px 12px;
+  text-align:center;
+}
+.step-node .ico{font-size:1.3rem;display:block;margin-bottom:6px}
+.step-node .name{font-size:.8rem;font-weight:600;color:var(--text)}
+.step-node .hint{font-size:.68rem;color:var(--muted);margin-top:3px;line-height:1.4}
+.step-conn{
+  flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;
+  color:var(--dim);font-size:1rem;padding-bottom:8px;
+}
 
-  .badge-auto {
-    margin-left: auto;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    background: rgba(63,185,80,0.1);
-    color: var(--c2);
-    border: 1px solid rgba(63,185,80,0.25);
-    white-space: nowrap;
-  }
-  .badge-human {
-    margin-left: auto;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    background: rgba(247,120,186,0.1);
-    color: var(--c4);
-    border: 1px solid rgba(247,120,186,0.25);
-    white-space: nowrap;
-  }
+.mode-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:600;
+  margin-top:12px;
+}
+.mode-plan{background:rgba(59,158,255,.1);color:var(--c1);border:1px solid rgba(59,158,255,.2)}
 
-  /* Steps inside phase */
-  .steps {
-    display: flex;
-    gap: 0;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-  .step {
-    flex: 1;
-    min-width: 140px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  .step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: -1px;
-    width: 2px;
-    height: 1px;
-  }
-  .step-box {
-    width: 100%;
-    padding: 14px 12px;
-    border-radius: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    text-align: center;
-    position: relative;
-  }
-  .step-icon {
-    font-size: 1.4rem;
-    margin-bottom: 6px;
-    display: block;
-  }
-  .step-text {
-    font-size: 0.8rem;
-    color: var(--text);
-    font-weight: 500;
-    line-height: 1.4;
-  }
-  .step-desc {
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-top: 4px;
-    line-height: 1.4;
-  }
+/* ── Phase 2: agent + outputs ── */
+.agent-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:12px;padding:14px 18px;
+  margin-bottom:14px;
+}
+.agent-icon{font-size:1.6rem;flex-shrink:0}
+.agent-info .agent-name{font-size:.88rem;font-weight:700}
+.agent-info .agent-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+.agent-badge{
+  margin-left:auto;padding:3px 10px;border-radius:6px;
+  font-size:.68rem;font-weight:600;
+  background:rgba(46,204,113,.1);color:var(--c2);
+  border:1px solid rgba(46,204,113,.2);flex-shrink:0;
+}
 
-  /* Arrow between steps */
-  .step-arrow {
-    display: flex;
-    align-items: center;
-    padding: 0 6px;
-    padding-top: 18px;
-    color: var(--muted);
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
+.outputs-row{
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.output-chip{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 14px;border-radius:10px;
+  background:rgba(46,204,113,.05);border:1px solid rgba(46,204,113,.18);
+  font-size:.78rem;font-weight:600;color:var(--c2);flex:1;min-width:150px;
+}
+.output-chip .chip-sub{font-size:.65rem;color:var(--muted);font-weight:400;display:block;margin-top:1px}
 
-  /* Output files highlight */
-  .output-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .output-file {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background: rgba(63,185,80,0.06);
-    border: 1px solid rgba(63,185,80,0.2);
-    border-radius: 8px;
-    font-size: 0.78rem;
-    color: var(--c2);
-    font-weight: 600;
-  }
+/* ── Phase 3: dev loop ── */
+.dev-trigger{
+  display:flex;align-items:center;gap:10px;
+  background:#0a1525;border:1px solid #1a2d45;
+  border-radius:10px;padding:10px 16px;
+  margin-bottom:16px;font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;color:#7ec8e3;
+}
+.dev-trigger .prompt{color:#4a6a88;margin-right:4px}
+.dev-trigger .cmd-name{color:#e8a430;font-weight:500}
+.dev-trigger .cmd-args{color:#7ec8e3}
 
-  /* Loop callout inside p3 */
-  .loop-box {
-    margin-top: 16px;
-    padding: 14px 16px;
-    background: rgba(210,153,34,0.05);
-    border: 1px dashed rgba(210,153,34,0.3);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .loop-icon { font-size: 1.3rem; flex-shrink: 0; }
-  .loop-text { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
-  .loop-text strong { color: var(--c3); }
+/* loop zone */
+.loop-zone{
+  background:rgba(240,160,48,.03);
+  border:1px dashed rgba(240,160,48,.2);
+  border-radius:14px;
+  padding:18px 18px 12px;
+  position:relative;
+}
+.loop-zone-label{
+  position:absolute;top:-11px;left:16px;
+  background:var(--card);
+  padding:2px 10px;border-radius:6px;
+  font-size:.65rem;font-weight:700;color:var(--c3);
+  border:1px solid rgba(240,160,48,.2);
+  letter-spacing:.06em;text-transform:uppercase;
+}
 
-  /* Connector between phases */
-  .connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 0;
-    gap: 2px;
-  }
-  .connector-line {
-    width: 2px;
-    height: 24px;
-    background: linear-gradient(to bottom, var(--border), var(--border));
-  }
-  .connector-arrow {
-    width: 0; height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 8px solid var(--border);
-  }
+/* two agents side by side */
+.agents-row{
+  display:flex;align-items:stretch;gap:0;
+}
+.loop-agent{
+  flex:1;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;text-align:center;
+  transition:border-color .2s;
+}
+.loop-agent.exec{border-top:2px solid var(--c1)}
+.loop-agent.test{border-top:2px solid var(--c2)}
+.loop-agent .la-icon{font-size:1.4rem;display:block;margin-bottom:6px}
+.loop-agent .la-name{font-size:.83rem;font-weight:700}
+.loop-agent.exec .la-name{color:var(--c1)}
+.loop-agent.test .la-name{color:var(--c2)}
+.loop-agent .la-role{font-size:.68rem;color:var(--muted);margin-top:3px}
+.loop-agent .la-tag{
+  display:inline-block;margin-top:7px;
+  padding:2px 8px;border-radius:5px;
+  font-size:.62rem;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.loop-agent.exec .la-tag{background:rgba(59,158,255,.1);color:var(--c1)}
+.loop-agent.test .la-tag{background:rgba(46,204,113,.1);color:var(--c2)}
 
-  /* Coverage bar */
-  .coverage {
-    margin-top: 48px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 28px;
-  }
-  .coverage h3 {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 16px;
-  }
-  .bar-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-  .bar-label {
-    width: 140px;
-    font-size: 0.8rem;
-    color: var(--text);
-    flex-shrink: 0;
-  }
-  .bar-track {
-    flex: 1;
-    height: 8px;
-    background: var(--surface2);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 1s ease;
-  }
-  .bar-pct {
-    width: 36px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-align: right;
-    flex-shrink: 0;
-  }
+/* horizontal arrow between agents */
+.h-arrow-wrap{
+  display:flex;align-items:center;padding:0 10px;
+}
+.h-arrow-line{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.h-arrow-track{
+  display:flex;align-items:center;gap:0;
+}
+.h-line{width:24px;height:2px;background:var(--border2)}
+.h-tip{
+  width:0;height:0;
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+  border-left:7px solid var(--border2);
+}
 
-  /* Key insights */
-  .insights {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-  }
-  .insight {
-    padding: 14px 16px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.78rem;
-    line-height: 1.5;
-  }
-  .insight .insight-icon { font-size: 1.1rem; display: block; margin-bottom: 6px; }
-  .insight .insight-label { color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-  .insight .insight-val { color: var(--text); font-weight: 600; margin-top: 2px; }
+/* loop return U-path */
+.loop-return{
+  display:flex;align-items:flex-end;
+  margin:0 12px;
+  height:36px;
+  position:relative;
+}
+.u-left{
+  flex:1;height:100%;
+  border-left:2px solid rgba(240,160,48,.5);
+  border-bottom:2px solid rgba(240,160,48,.5);
+  border-radius:0 0 0 10px;
+  position:relative;
+}
+.u-left::after{  /* arrowhead pointing up at top-left */
+  content:'';position:absolute;
+  top:-1px;left:-6px;
+  width:0;height:0;
+  border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  border-bottom:7px solid rgba(240,160,48,.8);
+}
+.u-center{
+  display:flex;align-items:flex-end;
+  padding:0 10px 6px;
+  font-size:.68rem;color:rgba(240,160,48,.8);
+  white-space:nowrap;letter-spacing:.02em;
+}
+.u-right{
+  flex:1;height:100%;
+  border-right:2px solid rgba(240,160,48,.5);
+  border-bottom:2px solid rgba(240,160,48,.5);
+  border-radius:0 0 10px 0;
+  position:relative;
+}
+.u-right::after{  /* arrowhead pointing down at top-right */
+  content:'';position:absolute;
+  top:-1px;right:-6px;
+  width:0;height:0;
+  border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  border-top:7px solid rgba(240,160,48,.8);
+}
 
-  footer {
-    text-align: center;
-    margin-top: 48px;
-    color: var(--muted);
-    font-size: 0.75rem;
-  }
+/* pass exit */
+.pass-exit{
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;padding-top:10px;
+}
+.pass-line{width:2px;height:16px;background:rgba(46,204,113,.4)}
+.pass-tip{
+  width:0;height:0;
+  border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  border-top:6px solid rgba(46,204,113,.5);
+}
+.pass-label{
+  font-size:.7rem;color:var(--c2);font-weight:600;
+  background:rgba(46,204,113,.08);
+  border:1px solid rgba(46,204,113,.2);
+  border-radius:6px;padding:3px 12px;
+  margin-top:2px;
+}
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    .header h1 { font-size: 1.5rem; }
-    .phase { padding: 20px 18px; }
-    .steps { flex-direction: column; }
-    .step-arrow { transform: rotate(90deg); padding: 6px 0; }
-    .bar-label { width: 110px; }
-  }
+/* ── Phase 4: human modes ── */
+.modes-row{
+  display:flex;align-items:center;gap:10px;
+}
+.mode-card{
+  flex:1;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;
+}
+.mode-card .mc-icon{font-size:1.3rem;margin-bottom:7px;display:block}
+.mode-card .mc-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:6px;
+}
+.mode-plan-card{border-top:2px solid var(--c1)}
+.mode-plan-card .mc-label{color:var(--c1)}
+.mode-build-card{border-top:2px solid var(--c4)}
+.mode-build-card .mc-label{color:var(--c4)}
+.mc-items{list-style:none;display:flex;flex-direction:column;gap:4px}
+.mc-items li{
+  font-size:.72rem;color:var(--muted);
+  display:flex;align-items:center;gap:5px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.mc-items li::before{content:'·';color:var(--dim)}
+.mc-items li:last-child{border-bottom:none}
+
+.switch-icon{
+  flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;color:var(--dim);
+}
+.switch-icon .sw-arrows{font-size:1.2rem;line-height:1}
+.switch-icon .sw-label{font-size:.6rem;letter-spacing:.04em;text-align:center;color:var(--dim)}
+
+/* ── footer ── */
+footer{
+  text-align:center;margin-top:52px;
+  color:var(--dim);font-size:.72rem;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.footer-divider{
+  width:60px;height:1px;
+  background:linear-gradient(to right,transparent,var(--border2),transparent);
+}
+.ratio-badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ratio-badge{
+  padding:4px 14px;border-radius:20px;
+  font-size:.72rem;font-weight:600;
+}
+.rb-auto{background:rgba(240,160,48,.1);color:var(--c3);border:1px solid rgba(240,160,48,.2)}
+.rb-human{background:rgba(176,110,245,.1);color:var(--c4);border:1px solid rgba(176,110,245,.2)}
+
+/* ── responsive ── */
+@media(max-width:560px){
+  .header h1{font-size:1.5rem}
+  .steps-row{flex-direction:column}
+  .step-conn{transform:rotate(90deg)}
+  .modes-row{flex-direction:column}
+  .switch-icon{flex-direction:row}
+}
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
-
-<div class="container">
-
-  <!-- Header -->
+  <!-- ── header ── -->
   <div class="header">
-    <div class="label">Harness Engineering</div>
-    <h1>工程实践方法论</h1>
-    <p>基于 Claude Code Harness 的四阶段开发流程<br>让 AI 自动化承载 80% 的开发工作量</p>
+    <div class="eyebrow">🛠 Harness Engineering</div>
+    <h1>四阶段开发方法论</h1>
+    <p class="desc">基于 Plan + Build 双模式 &amp; 三代理协作的工程实践<br>
+    自动化承载 ~80% 开发工作量，人工聚焦边界场景</p>
   </div>
 
-  <!-- Flow -->
-  <div class="flow">
-
-    <!-- Phase 1 -->
-    <div class="phase p1">
-      <div class="phase-header">
-        <div class="phase-num">01</div>
-        <div>
-          <div class="phase-title">需求分析 &amp; 概要设计</div>
-          <div class="phase-sub">弄清楚要做什么，再想怎么做</div>
-        </div>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🎯</span>
-            <div class="step-text">明确业务场景</div>
-            <div class="step-desc">确定边界、目标、约束条件</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🗂️</span>
-            <div class="step-text">划分功能模块</div>
-            <div class="step-desc">按职责拆分，确定粒度</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🏗️</span>
-            <div class="step-text">概要设计</div>
-            <div class="step-desc">技术方案选型、架构决策</div>
-          </div>
-        </div>
+  <!-- ═══════════ PHASE 1 ═══════════ -->
+  <div class="phase p1">
+    <div class="phase-head">
+      <div class="phase-num">01</div>
+      <div class="phase-head-text">
+        <div class="phase-name">需求理解 &amp; 概要设计</div>
+        <div class="phase-sub">人工主导 · 把场景、边界、方案想清楚再动手</div>
       </div>
     </div>
-
-    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
-
-    <!-- Phase 2 -->
-    <div class="phase p2">
-      <div class="phase-header">
-        <div class="phase-num">02</div>
-        <div>
-          <div class="phase-title">任务拆分 &amp; 验收确认</div>
-          <div class="phase-sub">产出可执行的任务文档，是后续自动化的核心输入</div>
+    <div class="phase-body">
+      <div class="steps-row">
+        <div class="step-node">
+          <span class="ico">🎯</span>
+          <div class="name">明确业务场景</div>
+          <div class="hint">边界 / 目标 / 约束</div>
+        </div>
+        <div class="step-conn">→</div>
+        <div class="step-node">
+          <span class="ico">🗂</span>
+          <div class="name">功能模块划分</div>
+          <div class="hint">合理粒度 / 职责清晰</div>
+        </div>
+        <div class="step-conn">→</div>
+        <div class="step-node">
+          <span class="ico">🏗</span>
+          <div class="name">概要设计</div>
+          <div class="hint">技术选型 / 架构决策</div>
         </div>
       </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🤖</span>
-            <div class="step-text">调用 task-planner</div>
-            <div class="step-desc">生成结构化任务树</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">✅</span>
-            <div class="step-text">定义验收点</div>
-            <div class="step-desc">每个任务对应可验证标准</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">📋</span>
-            <div class="step-text">人工确认审查</div>
-            <div class="step-desc">核查任务边界与完整性</div>
-          </div>
-        </div>
-      </div>
-      <div class="output-row">
-        <div class="output-file">📄 tasks.md &nbsp;·&nbsp; 任务清单与分组</div>
-        <div class="output-file">☑️ checklist.md &nbsp;·&nbsp; 验收点清单</div>
-      </div>
+      <div><span class="mode-tag mode-plan">Plan 模式</span></div>
     </div>
-
-    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
-
-    <!-- Phase 3 -->
-    <div class="phase p3">
-      <div class="phase-header">
-        <div class="phase-num">03</div>
-        <div>
-          <div class="phase-title">自动化开发循环</div>
-          <div class="phase-sub">主会话持续调度 subagent，验证失败自动重试</div>
-        </div>
-        <span class="badge-auto">⚡ 自动化覆盖 ~80%</span>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">📖</span>
-            <div class="step-text">读取任务文档</div>
-            <div class="step-desc">主会话加载 tasks.md & checklist.md</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🚀</span>
-            <div class="step-text">调度 Subagent</div>
-            <div class="step-desc">按任务组并发或串行执行</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🔍</span>
-            <div class="step-text">验证验收点</div>
-            <div class="step-desc">逐条核查 checklist 通过率</div>
-          </div>
-        </div>
-      </div>
-      <div class="loop-box">
-        <span class="loop-icon">🔄</span>
-        <div class="loop-text">
-          验收失败 → <strong>分析原因</strong> → 调整策略 → 重新调度 subagent → 再次验证
-          <br>直到 <strong>所有任务组验收点全部通过</strong> 才进入下一阶段
-        </div>
-      </div>
-    </div>
-
-    <div class="connector"><div class="connector-line"></div><div class="connector-arrow"></div></div>
-
-    <!-- Phase 4 -->
-    <div class="phase p4">
-      <div class="phase-header">
-        <div class="phase-num">04</div>
-        <div>
-          <div class="phase-title">人工精修</div>
-          <div class="phase-sub">处理自动化覆盖不到的细节与边界情况</div>
-        </div>
-        <span class="badge-human">👤 人工投入 ~20%</span>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">👁️</span>
-            <div class="step-text">整体走查</div>
-            <div class="step-desc">发现自动化遗漏的细节问题</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🔧</span>
-            <div class="step-text">手动修复</div>
-            <div class="step-desc">针对性解决小问题</div>
-          </div>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step">
-          <div class="step-box">
-            <span class="step-icon">🎉</span>
-            <div class="step-text">验证交付</div>
-            <div class="step-desc">回归测试，问题清零后上线</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Coverage section -->
-  <div class="coverage">
-    <h3>工作量分布</h3>
-    <div class="bar-row">
-      <div class="bar-label">自动化循环（阶段三）</div>
-      <div class="bar-track"><div class="bar-fill" style="width:80%;background:linear-gradient(90deg,#d29922,#f59e0b)"></div></div>
-      <div class="bar-pct" style="color:#d29922">80%</div>
+  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
+
+  <!-- ═══════════ PHASE 2 ═══════════ -->
+  <div class="phase p2">
+    <div class="phase-head">
+      <div class="phase-num">02</div>
+      <div class="phase-head-text">
+        <div class="phase-name">任务拆分 &amp; 验收点生成</div>
+        <div class="phase-sub">task-planner 代理接管 · 产出后续自动化的核心输入</div>
+      </div>
     </div>
-    <div class="bar-row">
-      <div class="bar-label">人工精修（阶段四）</div>
-      <div class="bar-track"><div class="bar-fill" style="width:20%;background:linear-gradient(90deg,#f778ba,#ec4899)"></div></div>
-      <div class="bar-pct" style="color:#f778ba">20%</div>
-    </div>
-    <div class="insights">
-      <div class="insight">
-        <span class="insight-icon">📌</span>
-        <div class="insight-label">核心前提</div>
-        <div class="insight-val">方案足够清晰</div>
+    <div class="phase-body">
+      <div class="agent-card">
+        <div class="agent-icon">🤖</div>
+        <div class="agent-info">
+          <div class="agent-name">task-planner Agent</div>
+          <div class="agent-sub">解析需求 → 生成任务树 → 绑定验收标准</div>
+        </div>
+        <div class="agent-badge">自定义代理</div>
       </div>
-      <div class="insight">
-        <span class="insight-icon">🔑</span>
-        <div class="insight-label">关键产物</div>
-        <div class="insight-val">tasks.md &amp; checklist.md</div>
-      </div>
-      <div class="insight">
-        <span class="insight-icon">♻️</span>
-        <div class="insight-label">核心机制</div>
-        <div class="insight-val">验证 + 修复闭环循环</div>
-      </div>
-      <div class="insight">
-        <span class="insight-icon">🤖</span>
-        <div class="insight-label">执行架构</div>
-        <div class="insight-val">主会话 + Subagent 分工</div>
+      <div class="outputs-row">
+        <div class="output-chip">
+          📄 tasks.md
+          <div class="chip-sub">任务清单 · 按组拆分</div>
+        </div>
+        <div class="output-chip">
+          ☑️ checklist.md
+          <div class="chip-sub">验收点清单 · 逐条可验</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <footer>Harness Engineering Practice · 2026 · 向同事分享这份流程图</footer>
+  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
+
+  <!-- ═══════════ PHASE 3 ═══════════ -->
+  <div class="phase p3">
+    <div class="phase-head">
+      <div class="phase-num">03</div>
+      <div class="phase-head-text">
+        <div class="phase-name">自动化开发 + 验收循环</div>
+        <div class="phase-sub">一条命令入口 · 两个 Subagent 持续循环直至全部验收通过</div>
+      </div>
+    </div>
+    <div class="phase-body">
+
+      <!-- command trigger -->
+      <div class="dev-trigger">
+        <span class="prompt">$</span>
+        <span class="cmd-name">dev</span>
+        <span class="cmd-args">tasks.md&nbsp;&nbsp;checklist.md</span>
+      </div>
+
+      <!-- loop zone -->
+      <div class="loop-zone">
+        <div class="loop-zone-label">循环体</div>
+
+        <!-- two agents -->
+        <div class="agents-row">
+          <div class="loop-agent exec">
+            <span class="la-icon">⚙️</span>
+            <div class="la-name">task-executor</div>
+            <div class="la-role">按任务组逐项实现</div>
+            <span class="la-tag">Subagent</span>
+          </div>
+          <div class="h-arrow-wrap">
+            <div class="h-arrow-line">
+              <div class="h-arrow-track">
+                <div class="h-line"></div>
+                <div class="h-tip"></div>
+              </div>
+            </div>
+          </div>
+          <div class="loop-agent test">
+            <span class="la-icon">🔍</span>
+            <div class="la-name">task-tester</div>
+            <div class="la-role">逐条核查验收点</div>
+            <span class="la-tag">Subagent</span>
+          </div>
+        </div>
+
+        <!-- U-shaped return arrow -->
+        <div class="loop-return">
+          <div class="u-left"></div>
+          <div class="u-center">未通过 · 分析修复 · 重新执行</div>
+          <div class="u-right"></div>
+        </div>
+
+      </div><!-- /loop-zone -->
+
+      <!-- pass exit -->
+      <div class="pass-exit">
+        <div class="pass-line"></div>
+        <div class="pass-tip"></div>
+        <div class="pass-label">✓ 所有验收点通过 · 进入下一阶段</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-line"></div><div class="connector-tip"></div></div>
+
+  <!-- ═══════════ PHASE 4 ═══════════ -->
+  <div class="phase p4">
+    <div class="phase-head">
+      <div class="phase-num">04</div>
+      <div class="phase-head-text">
+        <div class="phase-name">人工边界验证 &amp; 精修</div>
+        <div class="phase-sub">Plan ⇄ Build 模式切换 · 处理自动化覆盖不到的边界场景</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="modes-row">
+
+        <div class="mode-card mode-plan-card">
+          <span class="mc-icon">🔭</span>
+          <div class="mc-label">Plan 模式</div>
+          <ul class="mc-items">
+            <li>查日志、看堆栈、定位根因</li>
+            <li>边界场景走查与复现</li>
+            <li>分析失败原因，制定修复方案</li>
+          </ul>
+        </div>
+
+        <div class="switch-icon">
+          <div class="sw-arrows">⇄</div>
+          <div class="sw-label">模式<br>切换</div>
+        </div>
+
+        <div class="mode-card mode-build-card">
+          <span class="mc-icon">🔧</span>
+          <div class="mc-label">Build 模式</div>
+          <ul class="mc-items">
+            <li>定向修复小问题</li>
+            <li>补充边界 case 测试</li>
+            <li>验证修复结果，回归</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── footer ── -->
+  <footer>
+    <div class="footer-divider"></div>
+    <div class="ratio-badges">
+      <span class="ratio-badge rb-auto">⚡ 自动化覆盖 ~80%（阶段 03）</span>
+      <span class="ratio-badge rb-human">👤 人工精修 ~20%（阶段 04）</span>
+    </div>
+    <div>Harness Engineering Practice · 2026</div>
+  </footer>
 
 </div>
 </body>
