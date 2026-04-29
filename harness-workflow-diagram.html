@@ -62,7 +62,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 22px 24px 20px;
 }
 
 .num {
@@ -88,7 +88,7 @@ body {
 .c4 { border-top: 2.5px solid #a855f7; }
 
 .card-body {
-  padding: 0 20px 18px;
+  padding: 0 24px 28px;
   border-top: 1px solid #f3f4f6;
 }
 
@@ -97,19 +97,19 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-top: 14px;
+  padding-top: 18px;
 }
 .step {
   flex: 1;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 10px 10px 9px;
+  padding: 16px 10px 14px;
   text-align: center;
 }
-.step .sico { font-size: 1.1rem; display: block; margin-bottom: 4px; }
-.step .sname { font-size: .72rem; font-weight: 600; color: #374151; }
-.step .shint { font-size: .62rem; color: #9ca3af; margin-top: 2px; }
+.step .sico { font-size: 1.4rem; display: block; margin-bottom: 7px; }
+.step .sname { font-size: .78rem; font-weight: 600; color: #374151; }
+.step .shint { font-size: .66rem; color: #9ca3af; margin-top: 4px; }
 
 .arrow-r { color: #d1d5db; font-size: .9rem; flex-shrink: 0; }
 
@@ -136,11 +136,11 @@ body {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 9px 12px;
+  padding: 16px 14px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
-  font-size: .72rem;
+  font-size: .78rem;
   font-weight: 600;
   color: #15803d;
 }
@@ -153,10 +153,10 @@ body {
 
 /* phase 3 loop */
 .loop-zone {
-  margin-top: 14px;
+  margin-top: 18px;
   border: 1.5px dashed #fcd34d;
   border-radius: 12px;
-  padding: 14px 14px 10px;
+  padding: 20px 16px 16px;
   background: #fffdf5;
   position: relative;
 }
@@ -183,15 +183,15 @@ body {
   background: #fff;
   border: 1.5px solid #e5e7eb;
   border-radius: 10px;
-  padding: 10px;
+  padding: 16px 10px;
   text-align: center;
 }
 .agent.exec { border-top: 2px solid #3b82f6; }
 .agent.test { border-top: 2px solid #22c55e; }
-.agent .aico { font-size: 1.1rem; display: block; margin-bottom: 4px; }
-.agent.exec .aname { font-size: .72rem; font-weight: 700; color: #3b82f6; }
-.agent.test .aname { font-size: .72rem; font-weight: 700; color: #22c55e; }
-.agent .arole { font-size: .62rem; color: #9ca3af; margin-top: 2px; }
+.agent .aico { font-size: 1.4rem; display: block; margin-bottom: 6px; }
+.agent.exec .aname { font-size: .78rem; font-weight: 700; color: #3b82f6; }
+.agent.test .aname { font-size: .78rem; font-weight: 700; color: #22c55e; }
+.agent .arole { font-size: .66rem; color: #9ca3af; margin-top: 3px; }
 
 /* U return arrow */
 .u-wrap {
@@ -259,20 +259,20 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 14px;
+  padding-top: 18px;
 }
 .mode {
   flex: 1;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 12px;
+  padding: 18px 14px;
 }
-.mode .mico { font-size: 1.1rem; display: block; margin-bottom: 5px; }
-.mode-plan .mlabel { font-size: .65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
-.mode-build .mlabel { font-size: .65rem; font-weight: 700; color: #a855f7; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.mode .mico { font-size: 1.4rem; display: block; margin-bottom: 7px; }
+.mode-plan .mlabel { font-size: .7rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 7px; }
+.mode-build .mlabel { font-size: .7rem; font-weight: 700; color: #a855f7; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 7px; }
 .mode ul { list-style: none; }
-.mode ul li { font-size: .65rem; color: #6b7280; padding: 2px 0; }
+.mode ul li { font-size: .7rem; color: #6b7280; padding: 3px 0; }
 .mode ul li::before { content: '· '; }
 
 .switch {
@@ -335,8 +335,9 @@ footer {
       <div class="card-body">
         <div class="steps">
           <div class="step">
-            <span class="sico">📄</span>
-            <div class="sname">读需求文档</div>
+            <span class="sico">📐</span>
+            <div class="sname">读设计文档</div>
+            <div class="shint">design_doc · api · db</div>
           </div>
           <div class="arrow-r">→</div>
           <div class="step">
