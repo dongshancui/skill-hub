@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness 工程实践方法论</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f0f2f5;
+  padding: 40px 24px 60px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -.02em;
+  margin-bottom: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* ── card ── */
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1.5px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px;
+}
+
+.num {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  font-size: .78rem;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.c1 { border-top: 2.5px solid #3b82f6; }
+.c2 { border-top: 2.5px solid #22c55e; }
+.c3 { border-top: 2.5px solid #f59e0b; }
+.c4 { border-top: 2.5px solid #a855f7; }
+
+.c1 .num { background: #eff6ff; color: #3b82f6; }
+.c2 .num { background: #f0fdf4; color: #22c55e; }
+.c3 .num { background: #fffbeb; color: #f59e0b; }
+.c4 .num { background: #faf5ff; color: #a855f7; }
+
+.card-title { font-size: .95rem; font-weight: 700; color: #111827; }
+.card-sub   { font-size: .7rem;  color: #9ca3af; margin-top: 3px; }
+
+.card-body {
+  padding: 0 24px 20px;
+  border-top: 1px solid #f3f4f6;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── step rows ── */
+.steps {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding-top: 16px;
+}
+.step {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 11px 10px;
+  text-align: center;
+}
+.step .ico  { font-size: 1.2rem; display: block; margin-bottom: 5px; }
+.step .name { font-size: .74rem; font-weight: 600; color: #374151; line-height: 1.3; }
+.step .hint { font-size: .62rem; color: #9ca3af; margin-top: 3px; line-height: 1.4; }
+
+/* ── mode tag ── */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: .66rem; font-weight: 600;
+}
+.tag-blue { background: #eff6ff; color: #3b82f6; }
+
+/* ── insight box ── */
+.insight {
+  margin-top: auto;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: .75rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+.c1 .insight { background: #eff6ff; color: #1d4ed8; border-left: 3px solid #3b82f6; }
+.c2 .insight { background: #f0fdf4; color: #15803d; border-left: 3px solid #22c55e; }
+.c3 .insight { background: #fffbeb; color: #92400e; border-left: 3px solid #f59e0b; }
+.c4 .insight { background: #faf5ff; color: #6b21a8; border-left: 3px solid #a855f7; }
+
+/* ── outputs (card 2) ── */
+.outputs {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+}
+.out {
+  flex: 1;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: .72rem;
+  font-weight: 600;
+  color: #15803d;
+}
+.out-sub {
+  display: block;
+  font-size: .62rem;
+  color: #86efac;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+/* ── loop zone (card 3) ── */
+.loop-zone {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agents {
+  display: flex;
+  gap: 8px;
+}
+.agent {
+  flex: 1;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 11px 10px;
+  text-align: center;
+}
+.agent.exec { border-top: 2px solid #3b82f6; }
+.agent.test { border-top: 2px solid #22c55e; }
+.agent .aico  { font-size: 1.1rem; display: block; margin-bottom: 4px; }
+.agent.exec .aname { font-size: .72rem; font-weight: 700; color: #3b82f6; }
+.agent.test .aname { font-size: .72rem; font-weight: 700; color: #22c55e; }
+.agent .arole { font-size: .62rem; color: #9ca3af; margin-top: 2px; }
+
+.loop-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #fffbeb;
+  border: 1px dashed #fcd34d;
+  border-radius: 8px;
+  font-size: .68rem;
+  color: #d97706;
+  font-weight: 500;
+}
+
+.env-row {
+  display: flex;
+  gap: 6px;
+}
+.env-chip {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 8px;
+  text-align: center;
+  font-size: .65rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+.env-chip .eico { font-size: 1rem; display: block; margin-bottom: 3px; }
+
+/* ── modes (card 4) ── */
+.modes {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+}
+.mode {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
+.mode .mico { font-size: 1.1rem; display: block; margin-bottom: 5px; }
+.mode-plan .mlabel { font-size: .66rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.mode-build .mlabel { font-size: .66rem; font-weight: 700; color: #a855f7; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.mode ul { list-style: none; }
+.mode ul li { font-size: .66rem; color: #6b7280; padding: 2px 0; }
+.mode ul li::before { content: '· '; }
+
+.switch {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: #d1d5db;
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<h1>Harness 工程实践方法论</h1>
+
+<div class="grid">
+
+  <!-- ① -->
+  <div class="card c1">
+    <div class="card-head">
+      <div class="num">01</div>
+      <div>
+        <div class="card-title">需求深度理解 &amp; 概要设计</div>
+        <div class="card-sub">Plan 模式 · 反复交互直到真正弄懂</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="steps">
+        <div class="step">
+          <span class="ico">📄</span>
+          <div class="name">读需求文档</div>
+          <div class="hint">结合文档对话</div>
+        </div>
+        <div class="step">
+          <span class="ico">🔁</span>
+          <div class="name">反复交互确认</div>
+          <div class="hint">澄清边界 · 消除歧义</div>
+        </div>
+        <div class="step">
+          <span class="ico">🏗</span>
+          <div class="name">模块划分 &amp; 设计</div>
+          <div class="hint">方案清晰再动手</div>
+        </div>
+      </div>
+      <span class="tag tag-blue">Plan 模式</span>
+      <div class="insight">
+        人对需求的深度理解，是为 AI 做出正确决策的前提。<br>需求没想清楚，AI 执行得再快也是在走弯路。
+      </div>
+    </div>
+  </div>
+
+  <!-- ② -->
+  <div class="card c2">
+    <div class="card-head">
+      <div class="num">02</div>
+      <div>
+        <div class="card-title">任务拆分 &amp; 验收点生成</div>
+        <div class="card-sub">task-planner 代理 · 独立可验收功能点为单元</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="outputs">
+        <div class="out">
+          📄 tasks.md
+          <span class="out-sub">任务清单 · 按功能点分组</span>
+        </div>
+        <div class="out">
+          ☑️ checklist.md
+          <span class="out-sub">验收点 · 逐条可验</span>
+        </div>
+      </div>
+      <div class="insight">
+        以独立可验收的功能点为粒度拆分任务与自测点，每个功能点形成小闭环。<br>
+        更短的上下文 → 更少的幻觉 → 更高的代码质量。
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ -->
+  <div class="card c3">
+    <div class="card-head">
+      <div class="num">03</div>
+      <div>
+        <div class="card-title">自动化开发 + 验收循环</div>
+        <div class="card-sub">dev 命令触发 · 持续循环直至全部通过</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="loop-zone">
+        <div class="agents">
+          <div class="agent exec">
+            <span class="aico">⚙️</span>
+            <div class="aname">task-executor</div>
+            <div class="arole">Subagent · 开发实现</div>
+          </div>
+          <div class="agent test">
+            <span class="aico">🔍</span>
+            <div class="aname">task-tester</div>
+            <div class="arole">Subagent · 验收测试</div>
+          </div>
+        </div>
+        <div class="loop-label">🔄 未通过 · 分析修复 · 重新执行</div>
+        <div class="env-row">
+          <div class="env-chip"><span class="eico">▶️</span>能运行</div>
+          <div class="env-chip"><span class="eico">🔎</span>能排查</div>
+          <div class="env-chip"><span class="eico">🔧</span>能修复</div>
+        </div>
+      </div>
+      <div class="insight">
+        环境就绪是底座——AI 能运行、能排查、能修复，自动化循环才能真正跑起来。
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ -->
+  <div class="card c4">
+    <div class="card-head">
+      <div class="num">04</div>
+      <div>
+        <div class="card-title">人工边界验证 &amp; 精修</div>
+        <div class="card-sub">Plan ⇄ Build 切换 · 处理边界场景</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="modes">
+        <div class="mode mode-plan">
+          <span class="mico">🔭</span>
+          <div class="mlabel">Plan 模式</div>
+          <ul>
+            <li>查日志 · 定位根因</li>
+            <li>边界场景走查</li>
+            <li>制定修复方案</li>
+          </ul>
+        </div>
+        <div class="switch">⇄</div>
+        <div class="mode mode-build">
+          <span class="mico">🔧</span>
+          <div class="mlabel">Build 模式</div>
+          <ul>
+            <li>定向修复</li>
+            <li>补充边界用例</li>
+            <li>验证 · 回归</li>
+          </ul>
+        </div>
+      </div>
+      <div class="insight">
+        自动化覆盖 ~80% 的开发工作，人工聚焦在 AI 难以处理的边界场景与最终质量把关。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
